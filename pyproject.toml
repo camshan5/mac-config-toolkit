@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "mac-config-toolkit"
+version = "0.1.0"
+description = ""
+authors = ["Cameron Shannon <cshannon@choicepays.com>"]
+readme = "README.md"
+packages = [{include = "mac_config_toolkit"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+python-dotenv = "^1.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
