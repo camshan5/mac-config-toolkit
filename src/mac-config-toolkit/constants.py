@@ -11,3 +11,6 @@ NVM_DIR = Path(os.environ.get("NVM_DIR", XDG_NVM_PATH)).resolve()
 
 DEFAULT_PYENV_ROOT = HOME / ".local/pyenv"
 PYENV_ROOT = Path(os.environ.get("PYENV_ROOT", DEFAULT_PYENV_ROOT)).resolve()
+
+VS_CODE_EXTENSIONS_PATH = HOME / ".vscode/extensions"
+VS_CODE_EXTENSIONS_FILE = "extensions.json"
