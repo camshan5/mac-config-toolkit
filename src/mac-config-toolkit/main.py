@@ -1,4 +1,6 @@
+import configparser
 import os
+from pathlib import Path
 from pprint import pprint
 
 from dotenv import load_dotenv
@@ -13,6 +15,42 @@ from utils import DirTools, UseSubprocess, FileTools
 
 load_dotenv()
 USER_DIR = os.getenv("USER_DIR")
+
+
+def get_gitconfig_path():
+    # Find the global .gitconfig file
+    result = UseSubprocess(
+        ["git", "config", "--global", "--list", "--show-origin"]
+    ).run_command()
+
+    for line in result.splitlines():
+        if "file:" in line:
+            path = line.split("file:", 1)[1].strip().split("\t", 1)[0]
+            return Path(path).expanduser()
+
+    return None
+
+
+def get_gitconfig_data():
+    gitconfig_path = get_gitconfig_path()
+
+    if gitconfig_path is None:
+        print("Global .gitconfig file not found.")
+        return
+
+    config = configparser.ConfigParser(interpolation=None)
+    config.read(gitconfig_path)
+
+    # Create a dictionary to store sections, keys, and values
+    gitconfig_dict = {}
+
+    # Iterate through all sections, keys, and values in the .gitconfig file
+    for section in config.sections():
+        gitconfig_dict[section] = {}
+        for key, value in config.items(section):
+            gitconfig_dict[section][key] = value
+
+    return {"gitconfig": gitconfig_dict}
 
 
 def get_homebrew_leaves():
@@ -86,6 +124,7 @@ def get_vscode_extensions():
 
 
 if __name__ == "__main__":
+    gitconfig_data = get_gitconfig_data()
     homebrew_packages_dict = get_homebrew_leaves()
     node_versions_dict = get_node_versions_installed()
     pipx_venvs_dict = get_pipx_venvs()
@@ -93,10 +132,11 @@ if __name__ == "__main__":
     vscode_extensions = get_vscode_extensions()
 
     merge_dicts = {
+        **gitconfig_data,
+        **homebrew_packages_dict,
+        **node_versions_dict,
         **pipx_venvs_dict,
         **pyenv_versions_dict,
-        **node_versions_dict,
-        **homebrew_packages_dict,
         **vscode_extensions,
     }
 
